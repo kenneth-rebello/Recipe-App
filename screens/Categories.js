@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, FlatList } from 'react-native'
+import { FlatList } from 'react-native'
 import { CATEGORIES } from '../data/Dummy'
 import Tile from '../components/Tile'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'

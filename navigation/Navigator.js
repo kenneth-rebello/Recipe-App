@@ -118,10 +118,15 @@ const TabNavigator = Platform.OS==='android' ?
   )
 
 const FilterNavigator = createStackNavigator({
-    Filters: Filters
+    Filters: {
+      screen: Filters,
+      navigationOptions:{
+        title:'Bon Apetit'
+      }
+    }
   },
   {
-    defaultNavigationOptions: defaultStackConfig
+    defaultNavigationOptions: defaultStackConfig,
   }
 )
 

@@ -1,14 +1,37 @@
-import React from 'react'
-import { View, Text, StyleSheet, Button, ScrollView, Image } from 'react-native'
-import { RECIPES } from '../data/Dummy'
+import React, { useEffect, useCallback } from 'react'
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import CustomHeaderButton from '../components/HeaderButton'
 import { Colors } from '../utils/Colors'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleFav } from '../redux/actions/recipes.action'
 
 const MealDetails = ({navigation}) => {
 
     const id = navigation.getParam('recipeId')
-    const recipe = RECIPES.find(recipe => recipe.id===id)
+    const allRecipes = useSelector(state => state.recipe.recipes)
+    const recipe = allRecipes.find(recipe => recipe.id===id)
+
+    const favorites = useSelector(state => state.recipe.favorite)
+    
+
+    useEffect(()=>{
+        const exists = favorites.filter(fav => fav.id===id)
+        if(exists.length>0){
+            navigation.setParams({fav: true})
+        }else{
+            navigation.setParams({fav: false})
+        }
+    },[favorites])
+    
+    const dispatch = useDispatch();
+    const handleFavorite = useCallback(() => {
+        dispatch(toggleFav(id));
+    }, [dispatch, id])
+
+    useEffect(()=>{
+        navigation.setParams({favorite: handleFavorite})
+    },[handleFavorite])
 
     const { duration, complexity, affordability, imageUrl } = recipe
 
@@ -33,12 +56,15 @@ const MealDetails = ({navigation}) => {
 }
 
 MealDetails.navigationOptions = navigationData => {
-    const id = navigationData.navigation.getParam('recipeId')
-    const recipe = RECIPES.find(recipe => recipe.id===id)
+
+    const isFav = navigationData.navigation.getParam('fav')
+    const favorite = navigationData.navigation.getParam('favorite')
+
+    const icon = isFav ? "ios-star" : "ios-star-outline"
     return{
-        title:recipe.title,
+        title:navigationData.navigation.getParam('recipeTitle'),
         headerRight: () => <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-            <Item title="Favorite" iconName="ios-star" onPress={()=>{console.log(recipe.title)}}/>
+            <Item title="Favorite" iconName={icon} onPress={favorite}/>
         </HeaderButtons>
     }
 }
